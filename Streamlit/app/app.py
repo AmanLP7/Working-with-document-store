@@ -1,28 +1,34 @@
-import numpy as np
-import streamlit as st
-import pandas as pd
-import pymongo
+########################################## Python web app to retrieve invoice data #####################################
 
-client = pymongo.MongoClient(
-    "mongodb://mongo:27017/",
-    username="root",
-    password="example"
-    )
+'''
+The code for creating a python web-app which takes customer or invoice id as input
+and retrieves invoice data. 
+'''
 
-db = client["docstreaming"]
-table = db["invoices"]
+########################################################################################################################
+
+# Importing required modules
+
+# System library imports
+import requests                 # For makinh HTTP requests
+
+# 3rd party modules
+import numpy as np              # For numercial computation
+import streamlit as st          # For creating streamlit web-app
+import pandas as pd             # For working with dataframes
+
+
+########################################################################################################################
+
 
 # Add input field for customer id
 customer_id = st.sidebar.text_input("CustomerID:")
 
 # If customer ID has been entered
 if customer_id:
-    query = {"CustomerID": customer_id}
-    document = table.find(
-        query,
-        { "_id": 0, "StockCode": 0, "Description": 0, "Quantity": 0, "Country": 0, "UnitPrice": 0}
-        )
-    df = pd.DataFrame(document)
+    URL = "http://localhost:8000/customer/"
+    data = requests.get(URL+customer_id).json()
+    df = pd.DataFrame(data)
     df.drop_duplicates(subset="InvoiceNo", keep="first", inplace=True)
 
     # Add the table
@@ -33,12 +39,9 @@ invoice_no = st.sidebar.text_input("InvoiceNo:")
 
 # If invoice number has been entered
 if invoice_no:
-    query = {"InvoiceNo": invoice_no}
-    document = table.find(
-        query,
-        { "_id": 0, "InvoiceDate": 0, "Country": 0, "CustomerID": 0 }
-        )
-    df = pd.DataFrame(document)
+    URL = "http://localhost:8000/invoice/"
+    data = requests.get(URL+invoice_no).json()
+    df = pd.DataFrame(data)
     reindexed = df.reindex(sorted(df.columns), axis=1)
     st.header("Output by invoice ID")
     data = st.dataframe(df)
