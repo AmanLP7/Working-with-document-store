@@ -26,7 +26,7 @@ customer_id = st.sidebar.text_input("CustomerID:")
 
 # If customer ID has been entered
 if customer_id:
-    URL = "http://localhost:8000/customer/"
+    URL = "http://api-ingest:80/customer/"
     data = requests.get(URL+customer_id).json()
     df = pd.DataFrame(data)
     df.drop_duplicates(subset="InvoiceNo", keep="first", inplace=True)
@@ -39,7 +39,7 @@ invoice_no = st.sidebar.text_input("InvoiceNo:")
 
 # If invoice number has been entered
 if invoice_no:
-    URL = "http://localhost:8000/invoice/"
+    URL = "http://api-ingest:80/invoice/"
     data = requests.get(URL+invoice_no).json()
     df = pd.DataFrame(data)
     reindexed = df.reindex(sorted(df.columns), axis=1)

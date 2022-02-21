@@ -70,7 +70,7 @@ class DB:
         name of the table
     '''
 
-    address = "mongodb://localhost:27017/"
+    address = "mongodb://mongo:27017/"
     username = "root"
     password = "example"
 
